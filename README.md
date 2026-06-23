@@ -6,7 +6,7 @@
 [![LangChain](https://img.shields.io/badge/LangChain-0.3-green.svg)](https://langchain.com/)
 [![RAGAS](https://img.shields.io/badge/eval-RAGAS-orange.svg)](https://docs.ragas.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![CI](https://github.com/YOUR_USERNAME/financial-rag/actions/workflows/eval.yml/badge.svg)](https://github.com/YOUR_USERNAME/financial-rag/actions)
+[![CI](https://github.com/jkknikhil-git/Enterprise-Financial-Intelligence-RAG/actions/workflows/eval.yml/badge.svg)](https://github.com/jkknikhil-git/Enterprise-Financial-Intelligence-RAG/actions)
 
 ---
 
@@ -113,7 +113,7 @@ FiQA dataset → RAGAS (Faithfulness · Answer Relevance · Context Precision) �
 ### Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/financial-rag.git
+git clone https://github.com/jkknikhil-git/Enterprise-Financial-Intelligence-RAG.git
 cd financial-rag
 
 python -m venv venv
