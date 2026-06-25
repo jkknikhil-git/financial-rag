@@ -6,7 +6,7 @@
 [![LangChain](https://img.shields.io/badge/LangChain-0.3-green.svg)](https://langchain.com/)
 [![RAGAS](https://img.shields.io/badge/eval-RAGAS-orange.svg)](https://docs.ragas.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![CI](https://github.com/jkknikhil-git/Enterprise-Financial-Intelligence-RAG/actions/workflows/eval.yml/badge.svg)](https://github.com/jkknikhil-git/Enterprise-Financial-Intelligence-RAG/actions)
+[![CI](https://github.com/YOUR_USERNAME/financial-rag/actions/workflows/eval.yml/badge.svg)](https://github.com/YOUR_USERNAME/financial-rag/actions)
 
 ---
 
@@ -37,33 +37,47 @@ A query like *"What was Apple's gross margin in fiscal 2023 compared to Microsof
                           │
                           ▼
                Unstructured Parser
-               (table-aware PDF extraction)
+               (table-aware PDF/HTML extraction)
                           │
                           ▼
-              Chunker (500–800 tok, 100 tok overlap)
+              Chunker (500-800 tok, 100 tok overlap)
                     │               │
                     ▼               ▼
                ChromaDB         BM25 Index
              (BGE-small-en)     (rank_bm25)
                     │               │
-                    └───────┬───────┘
-                            │  Hybrid search
-                            ▼
-                       RRF Fusion
-                            │
-                            ▼
+─ ─ ─ ─ ─ ─ ─ ─ ─ ─│─ ─ ─ ─ ─ ─ ─ │─ ─ ─ ─ ─ ─ ─ ─ ─ ─
+         RETRIEVAL   │               │
+                     └───────┬───────┘
+                             │
+            ┌────────────────┼────────────────┐
+            │                │                │
+            ▼                ▼                ▼
+         HyDE           Original          RAG Fusion
+   Generate hypothetical  BM25          2 query variants
+   answer, embed it      keyword       each gets HyDE embed
+   (better vocab match)  search        + BM25 retrieval
+            │                │                │
+            └────────────────┼────────────────┘
+                             │
+                             ▼
+                        RRF Fusion
+               (6 result sets → ranked merge)
+                             │
+                             ▼
               Cross-Encoder Reranker
                 (Cohere Rerank API)
-                            │
-                            ▼
-                  Citation Enforcer
-              (decline if unsupported)
-                            │
-                            ▼
+                (top 20 → top 5)
+                             │
+                             ▼
+                   Citation Enforcer
+               (decline if unsupported)
+                             │
+                             ▼
              Groq LLM — llama-3.3-70b-versatile
                 (versioned YAML prompt config)
-                            │
-                            ▼
+                             │
+                             ▼
                Answer + inline citations
 ```
 
@@ -96,8 +110,8 @@ FiQA dataset → RAGAS (Faithfulness · Answer Relevance · Context Precision) �
 ## Project Phases
 
 - [x] **Phase 0 — Scaffold**: repo structure, dependencies, CI skeleton, versioned prompt config
-- [x] **Phase 1 — Ingestion**: EDGAR fetcher, table-aware parser, chunker, dual index (ChromaDB + BM25)
-- [x] **Phase 2 — Retrieval & Generation*: hybrid search, RRF, cross-encoder reranker, citation enforcer, Groq LLM
+- [ ] **Phase 1 — Ingestion**: EDGAR fetcher, table-aware parser, chunker, dual index (ChromaDB + BM25)
+- [ ] **Phase 2 — Retrieval & Generation**: hybrid search, RRF, cross-encoder reranker, citation enforcer, Groq LLM
 - [ ] **Phase 3 — Evaluation & CI**: RAGAS offline evaluation, FiQA test set, GitHub Actions quality gate
 
 ---
@@ -113,7 +127,7 @@ FiQA dataset → RAGAS (Faithfulness · Answer Relevance · Context Precision) �
 ### Install
 
 ```bash
-git clone https://github.com/jkknikhil-git/Enterprise-Financial-Intelligence-RAG.git
+git clone https://github.com/YOUR_USERNAME/financial-rag.git
 cd financial-rag
 
 python -m venv venv

@@ -179,15 +179,44 @@ def _extract_facts(text: str) -> list[str]:
 
 
 def _fact_in_chunk(fact: str, chunk_text: str) -> bool:
-    """Check whether a fact string appears in a chunk (fuzzy-tolerant)."""
-    # Direct substring match
+    """
+    Check whether a fact appears in a chunk, tolerant of unit differences.
+
+    SEC tables express amounts in millions, so the LLM may produce
+    "$391,035 million" while the chunk only contains "391,035".
+    We normalise both sides before comparing.
+    """
+    # 1. Direct substring match
     if fact in chunk_text:
         return True
 
-    # Strip formatting: "$89.5 billion" should match "89.5 billion" or "$89,500"
-    stripped = re.sub(r"[\$,\s]", "", fact)
-    stripped_chunk = re.sub(r"[\$,\s]", "", chunk_text)
-    return stripped in stripped_chunk
+    # 2. Unit-normalised match
+    #    "$391,035 million" -> "391035"  should match chunk "391,035" -> "391035"
+    def _normalise(s: str) -> str:
+        s = re.sub(r"[\$,\s]", "", s)
+        s = re.sub(
+            r"(?:million|billion|trillion|thousand)",
+            "", s, flags=re.IGNORECASE,
+        )
+        return s.strip()
+
+    norm_fact  = _normalise(fact)
+    norm_chunk = _normalise(chunk_text)
+
+    if norm_fact and len(norm_fact) > 2 and norm_fact in norm_chunk:
+        return True
+
+    # 3. Year-only match — "fiscal year 2024" -> look for "2024" in chunk
+    for year in re.findall(r"20\d{2}", fact):
+        if year in chunk_text:
+            return True
+
+    # 4. Percentage numeric match — "15.2 percent" should match "15.2%"
+    pct = re.search(r"([\d\.]+)\s*(?:%|percent)", fact, re.IGNORECASE)
+    if pct and pct.group(1) in chunk_text:
+        return True
+
+    return False
 
 
 def _is_self_declined(answer: str) -> bool:

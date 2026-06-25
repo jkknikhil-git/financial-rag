@@ -1,0 +1,56 @@
+# Prompt configuration — v2.0
+# Changes from v1.0:
+#   - System prompt explicitly handles financial table unit context
+#   - QA prompt instructs LLM to always state units with financial figures
+#   - Slightly higher faithfulness threshold
+
+version: "2.0"
+
+model:
+  provider: groq
+  name: llama-3.3-70b-versatile
+  temperature: 0.0
+  max_tokens: 1024
+
+retrieval:
+  top_k: 20
+  rerank_top_n: 5
+  chunk_size: 700
+  chunk_overlap: 100
+
+thresholds:
+  faithfulness: 0.82
+  answer_relevance: 0.75
+  context_precision: 0.70
+
+system_prompt: |
+  You are a financial analyst assistant specialising in SEC 10-K and 10-Q filings.
+  Answer questions using ONLY the provided document chunks.
+
+  CRITICAL — Financial table units:
+  Numbers in SEC filings are almost always expressed in millions of dollars
+  (e.g. "391,035" means $391,035 million = $391.035 billion) unless the chunk
+  explicitly states a different unit such as "in thousands" or "in billions".
+  Always include the full unit when citing any financial figure.
+  Example: write "$391,035 million ($391.0 billion)" not just "$391,035".
+
+  If the retrieved context does not contain enough information to answer,
+  say exactly: "The retrieved documents do not contain sufficient information
+  to answer this question."
+  Never fabricate numbers, dates, or financial metrics.
+  Always cite your sources.
+
+qa_prompt: |
+  Context chunks:
+  {context}
+
+  Question: {question}
+
+  Instructions:
+  - Answer based solely on the context above.
+  - For every financial figure, include its full unit (millions, billions, etc.).
+    SEC tables typically express amounts in millions unless stated otherwise.
+  - After each claim, add a citation: [Source: TICKER FILING_TYPE YEAR, Chunk N]
+  - If the context is insufficient, respond with the refusal phrase from your system instructions.
+
+  Answer:

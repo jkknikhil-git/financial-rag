@@ -27,7 +27,7 @@ load_dotenv()
 
 ROOT_DIR    = Path(__file__).resolve().parents[2]
 PROMPTS_DIR = ROOT_DIR / "src" / "generation" / "prompts"
-DEFAULT_PROMPT_VERSION = "v1"
+DEFAULT_PROMPT_VERSION = "v2"
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
