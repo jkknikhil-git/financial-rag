@@ -1,4 +1,4 @@
-# Enterprise Financial Intelligence RAG
+# Financial RAG
 
 > A production-grade Retrieval-Augmented Generation pipeline for SEC 10-K and 10-Q filings — hybrid BM25 + vector search, cross-encoder reranking, citation enforcement, and RAGAS-gated continuous evaluation.
 
