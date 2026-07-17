@@ -22,6 +22,7 @@ thresholds:
   faithfulness: 0.82
   answer_relevance: 0.75
   context_precision: 0.70
+  answer_correctness: 0.50   # lower — FiQA answers may use different phrasing than our corpus
 
 system_prompt: |
   You are a financial analyst assistant specialising in SEC 10-K and 10-Q filings.

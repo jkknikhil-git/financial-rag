@@ -42,3 +42,7 @@ bm25_cache/
 # Keep directory scaffolding
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+
+# Evaluation results — local audit trail, not source artifacts
+evaluation_results/*.json
+!evaluation_results/.gitkeep

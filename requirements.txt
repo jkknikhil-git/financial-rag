@@ -25,6 +25,7 @@ cohere>=5.0.0
 # ── Evaluation ────────────────────────────────────────────────────────────────
 ragas>=0.2.0
 datasets>=3.0.0               # HuggingFace datasets (FiQA)
+langchain-google-vertexai>=2.0.0   # ragas 0.4.x compatibility shim
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
 python-dotenv>=1.0.0

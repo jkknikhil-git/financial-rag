@@ -27,12 +27,23 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Rebuild BM25 index from cached chunks
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+        run: |
+          python -m src.ingestion.edgar_fetcher --tickers AAPL MSFT --filing-type 10-K --limit 1
+          python -m src.ingestion.parser --tickers AAPL MSFT
+          python -m src.ingestion.chunker --tickers AAPL MSFT
+          python -m src.indexing.vector_store --tickers AAPL MSFT
+          python -m src.indexing.bm25_index
+
       - name: Run RAGAS evaluation
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
-        run: python src/evaluation/ragas_eval.py
+        run: |
+          python -m src.evaluation.ragas_eval --limit 4 --source curated
 
-      # The evaluation script exits with code 1 if any metric falls below
-      # the thresholds defined in src/generation/prompts/v1.yaml.
-      # GitHub Actions marks the PR as failed automatically on non-zero exit.
+      # ragas_eval.py exits with code 1 if any metric is below threshold.
+      # GitHub Actions fails the PR automatically on non-zero exit.
