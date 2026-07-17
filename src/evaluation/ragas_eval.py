@@ -171,6 +171,12 @@ def _run_ragas(samples: list[dict]) -> dict[str, float]:
         answer_relevancy.embeddings = evaluator_embeddings
         answer_correctness.llm      = evaluator_llm
 
+        # Groq only supports n=1. AnswerRelevancy generates `strictness` questions
+        # per answer in a single call via n=strictness (default 3), which Groq
+        # rejects with "'n' : number must be at most 1" — silently zeroing the
+        # metric. strictness=1 generates one question per answer: Groq-compatible.
+        answer_relevancy.strictness = 1
+
         # Build dataset — include ground_truth when available (FiQA source)
         has_ground_truth = any(s.get("ground_truth", "").strip() for s in samples)
 

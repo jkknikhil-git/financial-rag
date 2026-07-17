@@ -123,7 +123,10 @@ def _load_fiqa_hf(limit: int = 10) -> list[dict[str, str]]:
 
         questions = []
         for row in ds.select(range(min(limit, len(ds)))):
-            gt = row.get("ground_truth", "")
+            # FiQA's column is `ground_truths` (plural, a list). Reading the
+            # singular name silently yielded "" and disabled Answer Correctness.
+            # Fall back to the `answer` column if ground_truths is absent.
+            gt = row.get("ground_truths") or row.get("ground_truth") or row.get("answer") or ""
             if isinstance(gt, list):
                 gt = gt[0] if gt else ""
             gt = str(gt).strip()
